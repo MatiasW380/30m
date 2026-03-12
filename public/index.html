@@ -18,7 +18,7 @@
     </div>
     <div class="header-center">
       <div class="price-block">
-        <span class="price-label">BTC/USDT PERP</span>
+        <span class="price-label">BTC/USDT</span>
         <span id="h-price" class="price-value">—</span>
       </div>
     </div>
@@ -34,14 +34,14 @@
   <!-- WARNING BANNER -->
   <div id="warning-banner" class="warning-banner hidden"></div>
 
-  <!-- TOP ROW: posición + métricas + parámetros -->
-  <div class="top-row">
+  <!-- MAIN GRID -->
+  <main class="main-grid">
 
     <!-- POSICIÓN ACTIVA -->
     <section class="card card-position" id="card-position">
       <div class="card-label">POSICIÓN ACTIVA</div>
       <div class="position-side" id="pos-side">FLAT</div>
-      <div class="position-metrics">
+      <div class="position-metrics" id="pos-metrics-group">
         <div class="pos-row">
           <span class="pos-key">Entrada</span>
           <span class="pos-val" id="pos-entry">—</span>
@@ -94,28 +94,6 @@
           <div class="metric-label">TIMEFRAME</div>
         </div>
       </div>
-
-      <!-- ÚLTIMAS OPERACIONES dentro de métricas -->
-      <div class="card-label" style="margin-top:16px;">ÚLTIMAS OPERACIONES</div>
-      <div class="trades-table-wrap">
-        <table class="trades-table">
-          <thead>
-            <tr>
-              <th>HORA</th>
-              <th>LADO</th>
-              <th>ENTRADA</th>
-              <th>SALIDA</th>
-              <th>ROI</th>
-              <th>MOTIVO</th>
-            </tr>
-          </thead>
-          <tbody id="trades-tbody">
-            <tr class="empty-row">
-              <td colspan="6">Sin operaciones registradas</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
     </section>
 
     <!-- PARÁMETROS -->
@@ -145,28 +123,43 @@
       </div>
     </section>
 
-  </div>
+    <!-- TABLA DE OPERACIONES -->
+    <section class="card card-trades">
+      <div class="card-label">ÚLTIMAS OPERACIONES</div>
+      <div class="trades-table-wrap">
+        <table class="trades-table">
+          <thead>
+            <tr>
+              <th>HORA</th>
+              <th>LADO</th>
+              <th>ENTRADA</th>
+              <th>SALIDA</th>
+              <th>ROI</th>
+              <th>MOTIVO</th>
+            </tr>
+          </thead>
+          <tbody id="trades-tbody">
+            <tr class="empty-row">
+              <td colspan="6">Sin operaciones registradas</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
 
-  <!-- BOTTOM ROW: gráfico TradingView -->
-  <div class="chart-row">
-    <div class="card card-chart">
-      <div class="card-label">BTCUSDT PERPETUAL · <span id="chart-sma-label">SMA 25 / SMA 50</span></div>
+    <!-- GRÁFICO TRADINGVIEW -->
+    <section class="card card-chart">
+      <div class="card-label">BTCUSDT PERPETUAL · <span id="chart-sma-label">SMA — / SMA —</span></div>
       <div id="tv-chart-container">
-        <!-- TradingView Widget -->
-        <div class="tradingview-widget-container" style="height:100%">
-          <div id="tradingview_chart" style="height:100%"></div>
+        <div class="tradingview-widget-container" style="height:100%;width:100%">
+          <div id="tradingview_chart" style="height:100%;width:100%"></div>
           <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
           <script type="text/javascript">
             window._tvWidget = null;
             window.initTVChart = function(smaShort, smaLong, timeframe) {
               var tfMap = { "5m": "5", "15m": "15", "30m": "30" };
               var interval = tfMap[timeframe] || "30";
-
-              if (window._tvWidget) {
-                window._tvWidget.remove();
-                window._tvWidget = null;
-              }
-
+              if (window._tvWidget) { try { window._tvWidget.remove(); } catch(e){} window._tvWidget = null; }
               window._tvWidget = new TradingView.widget({
                 container_id: "tradingview_chart",
                 symbol: "OKX:BTCUSDT.P",
@@ -178,44 +171,32 @@
                 toolbar_bg: "#0e1115",
                 enable_publishing: false,
                 hide_top_toolbar: false,
-                hide_legend: false,
                 save_image: false,
                 backgroundColor: "#080a0c",
                 gridColor: "#1e2530",
                 studies: [
-                  {
-                    id: "MASimple@tv-scripting-101!",
-                    inputs: { length: smaShort || 25, source: "close" },
-                    override: { "Plot.color": "#44aaff", "Plot.linewidth": 2 }
-                  },
-                  {
-                    id: "MASimple@tv-scripting-101!",
-                    inputs: { length: smaLong || 50, source: "close" },
-                    override: { "Plot.color": "#ffd600", "Plot.linewidth": 2 }
-                  }
+                  { id: "MASimple@tv-scripting-101!", inputs: { length: smaShort || 25 } },
+                  { id: "MASimple@tv-scripting-101!", inputs: { length: smaLong  || 50 } }
                 ],
                 overrides: {
-                  "mainSeriesProperties.candleStyle.upColor":        "#00e676",
-                  "mainSeriesProperties.candleStyle.downColor":      "#ff3d57",
-                  "mainSeriesProperties.candleStyle.borderUpColor":  "#00e676",
-                  "mainSeriesProperties.candleStyle.borderDownColor":"#ff3d57",
-                  "mainSeriesProperties.candleStyle.wickUpColor":    "#00e676",
-                  "mainSeriesProperties.candleStyle.wickDownColor":  "#ff3d57",
-                  "paneProperties.background":                       "#080a0c",
-                  "paneProperties.backgroundType":                   "solid",
+                  "mainSeriesProperties.candleStyle.upColor":         "#00e676",
+                  "mainSeriesProperties.candleStyle.downColor":       "#ff3d57",
+                  "mainSeriesProperties.candleStyle.borderUpColor":   "#00e676",
+                  "mainSeriesProperties.candleStyle.borderDownColor": "#ff3d57",
+                  "mainSeriesProperties.candleStyle.wickUpColor":     "#00e676",
+                  "mainSeriesProperties.candleStyle.wickDownColor":   "#ff3d57",
+                  "paneProperties.background":                        "#080a0c",
+                  "paneProperties.backgroundType":                    "solid",
                 },
-                width: "100%",
-                height: "100%",
                 autosize: true,
               });
             };
-            // Init con valores por defecto, se reemplaza cuando llegan los params del bot
-            window.initTVChart(25, 50, "30m");
           </script>
         </div>
       </div>
-    </div>
-  </div>
+    </section>
+
+  </main>
 
   <!-- TOAST NOTIFICATIONS -->
   <div id="toast-container"></div>
