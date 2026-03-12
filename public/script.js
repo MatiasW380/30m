@@ -152,7 +152,7 @@ function renderParams(params) {
 function renderTrades(trades) {
   const tbody = $("trades-tbody");
   if (!trades || trades.length === 0) {
-    tbody.innerHTML = `<tr class="empty-row"><td colspan="6">Sin operaciones registradas</td></tr>`;
+    tbody.innerHTML = `<tr class="empty-row"><td colspan="5">Sin operaciones</td></tr>`;
     return;
   }
   tbody.innerHTML = trades.map((t) => {
@@ -161,7 +161,6 @@ function renderTrades(trades) {
     const reason  = t.reason || t.exit_reason || "—";
     return `
       <tr>
-        <td>${t.time || "—"}</td>
         <td><span class="side-badge ${sideCls}">${t.side || "—"}</span></td>
         <td>${fmtPrice(t.entry)}</td>
         <td>${fmtPrice(t.exit)}</td>
