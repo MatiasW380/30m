@@ -1,68 +1,81 @@
-import { getRedis } from "../lib/redis.js";
+import { redis } from '../lib/redis.js';
+import { verifyViewer } from '../lib/auth.js';
 
 export default async function handler(req, res) {
-  if (req.method !== "GET") {
-    return res.status(405).json({ status: "error", message: "Method not allowed" });
-  }
-
-  res.setHeader("Access-Control-Allow-Origin", "*");
-
-  const redis = getRedis();
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  if (req.method === 'OPTIONS') return res.status(200).end();
+  if (req.method !== 'GET') return res.status(405).json({ error: 'Method not allowed' });
 
   try {
-    const viewerId = req.query.vid;
-    if (viewerId) {
-      await redis.set(`snip:viewer:${viewerId}`, "1", { ex: 45 });
+    const vid = req.query.vid;
+
+    // Track viewer si tiene ID
+    if (vid) {
+      await redis.set(`snip:viewer:${vid}`, Date.now(), { ex: 45 });
     }
 
-    const viewerKeys = await redis.keys("snip:viewer:*");
-    const activeViewers = viewerKeys ? viewerKeys.length : 0;
+    // Leer todo en paralelo
+    const [latestRaw, tradesRaw, metricsRaw, paramsRaw, notifRaw, calibRaw, signalsRaw] =
+      await Promise.all([
+        redis.get('snip:latest'),
+        redis.lrange('snip:trades', 0, 9),
+        redis.get('snip:metrics'),
+        redis.get('snip:params'),
+        redis.get('snip:notification'),
+        redis.get('snip:calib'),
+        redis.get('snip:signals'),
+      ]);
 
-    const [latestRaw, tradesRaw, metricsRaw, paramsRaw, notifRaw] = await Promise.all([
-      redis.get("snip:latest"),
-      redis.lrange("snip:trades", 0, 9),
-      redis.get("snip:metrics"),
-      redis.get("snip:params"),
-      redis.get("snip:notification"),
-    ]);
+    const current  = latestRaw  ? (typeof latestRaw  === 'string' ? JSON.parse(latestRaw)  : latestRaw)  : null;
+    const metrics  = metricsRaw ? (typeof metricsRaw === 'string' ? JSON.parse(metricsRaw) : metricsRaw) : null;
+    const params   = paramsRaw  ? (typeof paramsRaw  === 'string' ? JSON.parse(paramsRaw)  : paramsRaw)  : null;
+    const notif    = notifRaw   ? (typeof notifRaw   === 'string' ? JSON.parse(notifRaw)   : notifRaw)   : null;
+    const calib    = calibRaw   ? (typeof calibRaw   === 'string' ? JSON.parse(calibRaw)   : calibRaw)   : null;
+    const signals  = signalsRaw ? (typeof signalsRaw === 'string' ? JSON.parse(signalsRaw) : signalsRaw) : null;
 
-    const parse = (raw) => raw ? (typeof raw === "string" ? JSON.parse(raw) : raw) : null;
+    const recent_trades = (tradesRaw || []).map(t =>
+      typeof t === 'string' ? JSON.parse(t) : t
+    );
 
-    const current = parse(latestRaw);
-    const metrics = parse(metricsRaw);
-    const params  = parse(paramsRaw);
-    const notification = parse(notifRaw);
+    // Calcular duración si hay posición abierta
+    if (current?.entry_time && current?.position) {
+      const entryMs = new Date(current.entry_time).getTime();
+      const diffMin = Math.floor((Date.now() - entryMs) / 60000);
+      const h = Math.floor(diffMin / 60);
+      const m = diffMin % 60;
+      current.duration = h > 0 ? `${h}h ${m}m` : `${m}m`;
+    }
 
-    const recent_trades = (tradesRaw || []).map((t) => {
-      const trade = typeof t === "string" ? JSON.parse(t) : t;
-      if (trade.ts) {
-        const d = new Date(trade.ts);
-        trade.time = d.toLocaleTimeString("es-AR", {
-          hour: "2-digit", minute: "2-digit",
-          timeZone: "America/Argentina/Buenos_Aires",
-        });
+    // Contar viewers activos
+    let viewer_count = 1;
+    try {
+      const keys = await redis.keys('snip:viewer:*');
+      viewer_count = Math.max(1, keys.length);
+    } catch (_) {}
+
+    // Warning si el bot lleva más de 2 minutos sin update
+    let warning = null;
+    if (current?.updated_at) {
+      const secsSince = (Date.now() - current.updated_at) / 1000;
+      if (secsSince > 120) {
+        warning = `⚠️ Sin datos del bot hace ${Math.floor(secsSince / 60)} minutos`;
       }
-      return trade;
-    });
-
-    let duration = null;
-    if (current?.entry_time) {
-      const mins = Math.floor((Date.now() - new Date(current.entry_time).getTime()) / 60000);
-      duration = mins < 60 ? `${mins}m` : `${Math.floor(mins / 60)}h ${mins % 60}m`;
     }
 
     return res.status(200).json({
-      generated_at: Date.now(),
-      active_viewers: activeViewers,
-      warning: activeViewers >= 3 ? `⚠️ ${activeViewers} viewers activos — consumo alto` : null,
-      current: current ? { ...current, duration } : { price: null, position: null, status: "OFFLINE" },
-      metrics: metrics || { total_trades: 0, win_rate: 0, total_pnl: 0, best_trade: null, worst_trade: null, wins: 0 },
+      current,
+      metrics,
+      params,
       recent_trades,
-      params: params || null,
-      notification,
+      calib,
+      signals,
+      notification: notif,
+      viewer_count,
+      warning,
     });
+
   } catch (err) {
-    console.error("Data error:", err);
-    return res.status(500).json({ status: "error", message: err.message });
+    console.error('Data error:', err);
+    return res.status(500).json({ status: 'error', message: err.message });
   }
 }
