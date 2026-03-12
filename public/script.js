@@ -225,6 +225,8 @@ function render(data) {
   renderMetrics(data.metrics, data.params);
   renderParams(data.params);
   renderTrades(data.recent_trades);
+  renderCalib(data.calib);
+  renderSignals(data.signals);
   renderWarning(data.warning);
   showToast(data.notification);
 }
@@ -245,3 +247,30 @@ document.addEventListener("visibilitychange", () => {
 });
 
 startPolling();
+
+// ── RENDER CALIBRACIÓN ───────────────────────────────────────
+function renderCalib(calib) {
+  if (!calib) return;
+
+  const pair = calib.short && calib.long ? `SMA ${calib.short} / ${calib.long}` : "—";
+  $("c-pair").textContent   = pair;
+  $("c-score").textContent  = calib.score  !== undefined ? Number(calib.score).toFixed(4)  : "—";
+  $("c-trades").textContent = calib.trades !== undefined ? calib.trades : "—";
+
+  const ret = calib.ret;
+  const retEl = $("c-return");
+  retEl.textContent = ret !== undefined ? (ret >= 0 ? "+" : "") + Number(ret).toFixed(2) + "%" : "—";
+  retEl.className = "calib-val " + (ret >= 0 ? "positive" : "negative");
+
+  const dd = calib.max_dd;
+  $("c-dd").textContent = dd !== undefined ? "-" + Number(dd).toFixed(2) + "%" : "—";
+
+  $("c-next").textContent = calib.next_calib || "—";
+}
+
+// ── RENDER SEÑALES ───────────────────────────────────────────
+function renderSignals(signals) {
+  if (!signals) return;
+  $("s-executed").textContent = signals.executed ?? "0";
+  $("s-blocked").textContent  = signals.blocked  ?? "0";
+}
