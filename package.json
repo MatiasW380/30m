@@ -1,0 +1,8 @@
+{
+  "name": "sniper-dashboard",
+  "version": "1.0.0",
+  "description": "SNIPER BOT V.28.1 Dashboard",
+  "dependencies": {
+    "@upstash/redis": "^1.28.0"
+  }
+}
