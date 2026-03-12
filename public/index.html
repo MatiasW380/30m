@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SNIPER BOT V.28.1</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Barlow+Condensed:wght@300;400;600;700;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <header class="header">
+    <div class="header-left">
+      <span class="logo">⚡ SNIPER</span>
+      <span class="version">V.28.1 ADAPTIVE</span>
+    </div>
+    <div class="header-center">
+      <div class="price-block">
+        <span class="price-label">BTC/USDT</span>
+        <span id="h-price" class="price-value">—</span>
+      </div>
+    </div>
+    <div class="header-right">
+      <div class="status-pill" id="status-pill">
+        <span class="status-dot"></span>
+        <span id="status-text">CONNECTING</span>
+      </div>
+      <span id="last-update" class="last-update">—</span>
+    </div>
+  </header>
+
+  <div id="warning-banner" class="warning-banner hidden"></div>
+
+  <main class="main-grid">
+
+    <section class="card card-position" id="card-position">
+      <div class="card-label">POSICIÓN ACTIVA</div>
+      <div class="position-side" id="pos-side">FLAT</div>
+      <div class="position-metrics" id="pos-metrics-group">
+        <div class="pos-row">
+          <span class="pos-key">Entrada</span>
+          <span class="pos-val" id="pos-entry">—</span>
+        </div>
+        <div class="pos-row">
+          <span class="pos-key">ROI</span>
+          <span class="pos-val roi-val" id="pos-roi">—</span>
+        </div>
+        <div class="pos-row">
+          <span class="pos-key">Stop Loss</span>
+          <span class="pos-val" id="pos-stop">—</span>
+        </div>
+        <div class="pos-row">
+          <span class="pos-key">Trailing</span>
+          <span class="pos-val" id="pos-trailing">—</span>
+        </div>
+        <div class="pos-row">
+          <span class="pos-key">Duración</span>
+          <span class="pos-val" id="pos-duration">—</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="card card-metrics">
+      <div class="card-label">RENDIMIENTO</div>
+      <div class="metrics-grid">
+        <div class="metric-block">
+          <div class="metric-value" id="m-trades">—</div>
+          <div class="metric-label">TRADES</div>
+        </div>
+        <div class="metric-block">
+          <div class="metric-value" id="m-winrate">—</div>
+          <div class="metric-label">WIN RATE</div>
+        </div>
+        <div class="metric-block">
+          <div class="metric-value" id="m-pnl">—</div>
+          <div class="metric-label">P&L USDT</div>
+        </div>
+        <div class="metric-block">
+          <div class="metric-value positive" id="m-best">—</div>
+          <div class="metric-label">MEJOR</div>
+        </div>
+        <div class="metric-block">
+          <div class="metric-value negative" id="m-worst">—</div>
+          <div class="metric-label">PEOR</div>
+        </div>
+        <div class="metric-block">
+          <div class="metric-value" id="m-timeframe">—</div>
+          <div class="metric-label">TIMEFRAME</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="card card-params">
+      <div class="card-label">PARÁMETROS ACTIVOS</div>
+      <div class="params-list">
+        <div class="param-row">
+          <span class="param-key">SMA Short</span>
+          <span class="param-val" id="p-short">—</span>
+        </div>
+        <div class="param-row">
+          <span class="param-key">SMA Long</span>
+          <span class="param-val" id="p-long">—</span>
+        </div>
+        <div class="param-row">
+          <span class="param-key">ADX Umbral</span>
+          <span class="param-val" id="p-adx">—</span>
+        </div>
+        <div class="param-row">
+          <span class="param-key">ATR Mult</span>
+          <span class="param-val" id="p-atr">—</span>
+        </div>
+        <div class="param-row">
+          <span class="param-key">Calibrado</span>
+          <span class="param-val" id="p-calib">—</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="card card-trades">
+      <div class="card-label">ÚLTIMAS OPERACIONES</div>
+      <div class="trades-table-wrap">
+        <table class="trades-table">
+          <thead>
+            <tr>
+              <th>HORA</th>
+              <th>LADO</th>
+              <th>ENTRADA</th>
+              <th>SALIDA</th>
+              <th>ROI</th>
+              <th>MOTIVO</th>
+            </tr>
+          </thead>
+          <tbody id="trades-tbody">
+            <tr class="empty-row">
+              <td colspan="6">Sin operaciones registradas</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+  </main>
+
+  <div id="toast-container"></div>
+  <script src="script.js"></script>
+</body>
+</html>
