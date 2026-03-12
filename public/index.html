@@ -10,7 +10,6 @@
 </head>
 <body>
 
-  <!-- HEADER -->
   <header class="header">
     <div class="header-left">
       <span class="logo">⚡ SNIPER</span>
@@ -31,72 +30,148 @@
     </div>
   </header>
 
-  <!-- WARNING BANNER -->
   <div id="warning-banner" class="warning-banner hidden"></div>
 
-  <!-- MAIN GRID -->
   <main class="main-grid">
 
-    <!-- POSICIÓN ACTIVA -->
-    <section class="card card-position" id="card-position">
-      <div class="card-label">POSICIÓN ACTIVA</div>
-      <div class="position-side" id="pos-side">FLAT</div>
-      <div class="position-metrics" id="pos-metrics-group">
-        <div class="pos-row">
-          <span class="pos-key">Entrada</span>
-          <span class="pos-val" id="pos-entry">—</span>
-        </div>
-        <div class="pos-row">
-          <span class="pos-key">ROI</span>
-          <span class="pos-val roi-val" id="pos-roi">—</span>
-        </div>
-        <div class="pos-row">
-          <span class="pos-key">Stop Loss</span>
-          <span class="pos-val" id="pos-stop">—</span>
-        </div>
-        <div class="pos-row">
-          <span class="pos-key">Trailing</span>
-          <span class="pos-val" id="pos-trailing">—</span>
-        </div>
-        <div class="pos-row">
-          <span class="pos-key">Duración</span>
-          <span class="pos-val" id="pos-duration">—</span>
-        </div>
-      </div>
-    </section>
+    <!-- COLUMNA IZQUIERDA: posición + historial -->
+    <div class="left-col">
 
-    <!-- MÉTRICAS -->
-    <section class="card card-metrics">
-      <div class="card-label">RENDIMIENTO</div>
-      <div class="metrics-grid">
-        <div class="metric-block">
-          <div class="metric-value" id="m-trades">—</div>
-          <div class="metric-label">TRADES</div>
+      <section class="card card-position" id="card-position">
+        <div class="card-label">POSICIÓN ACTIVA</div>
+        <div class="position-side" id="pos-side">FLAT</div>
+        <div class="position-metrics">
+          <div class="pos-row">
+            <span class="pos-key">Entrada</span>
+            <span class="pos-val" id="pos-entry">—</span>
+          </div>
+          <div class="pos-row">
+            <span class="pos-key">ROI</span>
+            <span class="pos-val roi-val" id="pos-roi">—</span>
+          </div>
+          <div class="pos-row">
+            <span class="pos-key">Stop Loss</span>
+            <span class="pos-val" id="pos-stop">—</span>
+          </div>
+          <div class="pos-row">
+            <span class="pos-key">Trailing</span>
+            <span class="pos-val" id="pos-trailing">—</span>
+          </div>
+          <div class="pos-row">
+            <span class="pos-key">Duración</span>
+            <span class="pos-val" id="pos-duration">—</span>
+          </div>
         </div>
-        <div class="metric-block">
-          <div class="metric-value" id="m-winrate">—</div>
-          <div class="metric-label">WIN RATE</div>
-        </div>
-        <div class="metric-block">
-          <div class="metric-value" id="m-pnl">—</div>
-          <div class="metric-label">P&L USDT</div>
-        </div>
-        <div class="metric-block">
-          <div class="metric-value positive" id="m-best">—</div>
-          <div class="metric-label">MEJOR</div>
-        </div>
-        <div class="metric-block">
-          <div class="metric-value negative" id="m-worst">—</div>
-          <div class="metric-label">PEOR</div>
-        </div>
-        <div class="metric-block">
-          <div class="metric-value" id="m-timeframe">—</div>
-          <div class="metric-label">TIMEFRAME</div>
-        </div>
-      </div>
-    </section>
+      </section>
 
-    <!-- PARÁMETROS -->
+      <section class="card card-trades">
+        <div class="card-label">ÚLTIMAS OPERACIONES</div>
+        <div class="trades-table-wrap">
+          <table class="trades-table">
+            <thead>
+              <tr>
+                <th>LADO</th>
+                <th>ENTRADA</th>
+                <th>SALIDA</th>
+                <th>ROI</th>
+                <th>MOTIVO</th>
+              </tr>
+            </thead>
+            <tbody id="trades-tbody">
+              <tr class="empty-row">
+                <td colspan="5">Sin operaciones</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+    </div>
+
+    <!-- COLUMNA CENTRAL: métricas + gráfico -->
+    <div class="center-col">
+
+      <section class="card card-metrics">
+        <div class="card-label">RENDIMIENTO</div>
+        <div class="metrics-grid">
+          <div class="metric-block">
+            <div class="metric-value" id="m-trades">—</div>
+            <div class="metric-label">TRADES</div>
+          </div>
+          <div class="metric-block">
+            <div class="metric-value" id="m-winrate">—</div>
+            <div class="metric-label">WIN RATE</div>
+          </div>
+          <div class="metric-block">
+            <div class="metric-value" id="m-pnl">—</div>
+            <div class="metric-label">P&L USDT</div>
+          </div>
+          <div class="metric-block">
+            <div class="metric-value positive" id="m-best">—</div>
+            <div class="metric-label">MEJOR</div>
+          </div>
+          <div class="metric-block">
+            <div class="metric-value negative" id="m-worst">—</div>
+            <div class="metric-label">PEOR</div>
+          </div>
+          <div class="metric-block">
+            <div class="metric-value" id="m-timeframe">—</div>
+            <div class="metric-label">TIMEFRAME</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="card card-chart">
+        <div class="card-label">BTCUSDT PERPETUAL · <span id="chart-sma-label">SMA — / SMA —</span></div>
+        <div id="tv-chart-container">
+          <div class="tradingview-widget-container" style="height:100%;width:100%">
+            <div id="tradingview_chart" style="height:100%;width:100%"></div>
+            <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+            <script type="text/javascript">
+              window._tvWidget = null;
+              window.initTVChart = function(smaShort, smaLong, timeframe) {
+                var tfMap = { "5m": "5", "15m": "15", "30m": "30" };
+                var interval = tfMap[timeframe] || "30";
+                if (window._tvWidget) { try { window._tvWidget.remove(); } catch(e){} window._tvWidget = null; }
+                window._tvWidget = new TradingView.widget({
+                  container_id: "tradingview_chart",
+                  symbol: "OKX:BTCUSDT.P",
+                  interval: interval,
+                  timezone: "America/Argentina/Buenos_Aires",
+                  theme: "dark",
+                  style: "1",
+                  locale: "es",
+                  toolbar_bg: "#0e1115",
+                  enable_publishing: false,
+                  hide_top_toolbar: false,
+                  save_image: false,
+                  backgroundColor: "#080a0c",
+                  gridColor: "#1e2530",
+                  studies: [
+                    { id: "MASimple@tv-scripting-101!", inputs: { length: smaShort || 25 } },
+                    { id: "MASimple@tv-scripting-101!", inputs: { length: smaLong  || 50 } }
+                  ],
+                  overrides: {
+                    "mainSeriesProperties.candleStyle.upColor":         "#00e676",
+                    "mainSeriesProperties.candleStyle.downColor":       "#ff3d57",
+                    "mainSeriesProperties.candleStyle.borderUpColor":   "#00e676",
+                    "mainSeriesProperties.candleStyle.borderDownColor": "#ff3d57",
+                    "mainSeriesProperties.candleStyle.wickUpColor":     "#00e676",
+                    "mainSeriesProperties.candleStyle.wickDownColor":   "#ff3d57",
+                    "paneProperties.background":                        "#080a0c",
+                    "paneProperties.backgroundType":                    "solid",
+                  },
+                  autosize: true,
+                });
+              };
+            </script>
+          </div>
+        </div>
+      </section>
+
+    </div>
+
+    <!-- COLUMNA DERECHA: parámetros -->
     <section class="card card-params">
       <div class="card-label">PARÁMETROS ACTIVOS</div>
       <div class="params-list">
@@ -123,84 +198,9 @@
       </div>
     </section>
 
-    <!-- TABLA DE OPERACIONES -->
-    <section class="card card-trades">
-      <div class="card-label">ÚLTIMAS OPERACIONES</div>
-      <div class="trades-table-wrap">
-        <table class="trades-table">
-          <thead>
-            <tr>
-              <th>HORA</th>
-              <th>LADO</th>
-              <th>ENTRADA</th>
-              <th>SALIDA</th>
-              <th>ROI</th>
-              <th>MOTIVO</th>
-            </tr>
-          </thead>
-          <tbody id="trades-tbody">
-            <tr class="empty-row">
-              <td colspan="6">Sin operaciones registradas</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </section>
-
-    <!-- GRÁFICO TRADINGVIEW -->
-    <section class="card card-chart">
-      <div class="card-label">BTCUSDT PERPETUAL · <span id="chart-sma-label">SMA — / SMA —</span></div>
-      <div id="tv-chart-container">
-        <div class="tradingview-widget-container" style="height:100%;width:100%">
-          <div id="tradingview_chart" style="height:100%;width:100%"></div>
-          <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
-          <script type="text/javascript">
-            window._tvWidget = null;
-            window.initTVChart = function(smaShort, smaLong, timeframe) {
-              var tfMap = { "5m": "5", "15m": "15", "30m": "30" };
-              var interval = tfMap[timeframe] || "30";
-              if (window._tvWidget) { try { window._tvWidget.remove(); } catch(e){} window._tvWidget = null; }
-              window._tvWidget = new TradingView.widget({
-                container_id: "tradingview_chart",
-                symbol: "OKX:BTCUSDT.P",
-                interval: interval,
-                timezone: "America/Argentina/Buenos_Aires",
-                theme: "dark",
-                style: "1",
-                locale: "es",
-                toolbar_bg: "#0e1115",
-                enable_publishing: false,
-                hide_top_toolbar: false,
-                save_image: false,
-                backgroundColor: "#080a0c",
-                gridColor: "#1e2530",
-                studies: [
-                  { id: "MASimple@tv-scripting-101!", inputs: { length: smaShort || 25 } },
-                  { id: "MASimple@tv-scripting-101!", inputs: { length: smaLong  || 50 } }
-                ],
-                overrides: {
-                  "mainSeriesProperties.candleStyle.upColor":         "#00e676",
-                  "mainSeriesProperties.candleStyle.downColor":       "#ff3d57",
-                  "mainSeriesProperties.candleStyle.borderUpColor":   "#00e676",
-                  "mainSeriesProperties.candleStyle.borderDownColor": "#ff3d57",
-                  "mainSeriesProperties.candleStyle.wickUpColor":     "#00e676",
-                  "mainSeriesProperties.candleStyle.wickDownColor":   "#ff3d57",
-                  "paneProperties.background":                        "#080a0c",
-                  "paneProperties.backgroundType":                    "solid",
-                },
-                autosize: true,
-              });
-            };
-          </script>
-        </div>
-      </div>
-    </section>
-
   </main>
 
-  <!-- TOAST NOTIFICATIONS -->
   <div id="toast-container"></div>
-
   <script src="script.js"></script>
 </body>
 </html>
