@@ -34,33 +34,17 @@
 
   <main class="main-grid">
 
-    <!-- COLUMNA IZQUIERDA: posición + historial -->
+    <!-- COLUMNA IZQUIERDA -->
     <div class="left-col">
-
       <section class="card card-position" id="card-position">
         <div class="card-label">POSICIÓN ACTIVA</div>
         <div class="position-side" id="pos-side">FLAT</div>
         <div class="position-metrics">
-          <div class="pos-row">
-            <span class="pos-key">Entrada</span>
-            <span class="pos-val" id="pos-entry">—</span>
-          </div>
-          <div class="pos-row">
-            <span class="pos-key">ROI</span>
-            <span class="pos-val roi-val" id="pos-roi">—</span>
-          </div>
-          <div class="pos-row">
-            <span class="pos-key">Stop Loss</span>
-            <span class="pos-val" id="pos-stop">—</span>
-          </div>
-          <div class="pos-row">
-            <span class="pos-key">Trailing</span>
-            <span class="pos-val" id="pos-trailing">—</span>
-          </div>
-          <div class="pos-row">
-            <span class="pos-key">Duración</span>
-            <span class="pos-val" id="pos-duration">—</span>
-          </div>
+          <div class="pos-row"><span class="pos-key">Entrada</span><span class="pos-val" id="pos-entry">—</span></div>
+          <div class="pos-row"><span class="pos-key">ROI</span><span class="pos-val roi-val" id="pos-roi">—</span></div>
+          <div class="pos-row"><span class="pos-key">Stop Loss</span><span class="pos-val" id="pos-stop">—</span></div>
+          <div class="pos-row"><span class="pos-key">Trailing</span><span class="pos-val" id="pos-trailing">—</span></div>
+          <div class="pos-row"><span class="pos-key">Duración</span><span class="pos-val" id="pos-duration">—</span></div>
         </div>
       </section>
 
@@ -69,55 +53,27 @@
         <div class="trades-table-wrap">
           <table class="trades-table">
             <thead>
-              <tr>
-                <th>LADO</th>
-                <th>ENTRADA</th>
-                <th>SALIDA</th>
-                <th>ROI</th>
-                <th>MOTIVO</th>
-              </tr>
+              <tr><th>LADO</th><th>ENTRADA</th><th>SALIDA</th><th>ROI</th><th>MOTIVO</th></tr>
             </thead>
             <tbody id="trades-tbody">
-              <tr class="empty-row">
-                <td colspan="5">Sin operaciones</td>
-              </tr>
+              <tr class="empty-row"><td colspan="5">Sin operaciones</td></tr>
             </tbody>
           </table>
         </div>
       </section>
-
     </div>
 
-    <!-- COLUMNA CENTRAL: métricas + gráfico -->
+    <!-- COLUMNA CENTRAL -->
     <div class="center-col">
-
       <section class="card card-metrics">
         <div class="card-label">RENDIMIENTO</div>
         <div class="metrics-grid">
-          <div class="metric-block">
-            <div class="metric-value" id="m-trades">—</div>
-            <div class="metric-label">TRADES</div>
-          </div>
-          <div class="metric-block">
-            <div class="metric-value" id="m-winrate">—</div>
-            <div class="metric-label">WIN RATE</div>
-          </div>
-          <div class="metric-block">
-            <div class="metric-value" id="m-pnl">—</div>
-            <div class="metric-label">P&L USDT</div>
-          </div>
-          <div class="metric-block">
-            <div class="metric-value positive" id="m-best">—</div>
-            <div class="metric-label">MEJOR</div>
-          </div>
-          <div class="metric-block">
-            <div class="metric-value negative" id="m-worst">—</div>
-            <div class="metric-label">PEOR</div>
-          </div>
-          <div class="metric-block">
-            <div class="metric-value" id="m-timeframe">—</div>
-            <div class="metric-label">TIMEFRAME</div>
-          </div>
+          <div class="metric-block"><div class="metric-value" id="m-trades">—</div><div class="metric-label">TRADES</div></div>
+          <div class="metric-block"><div class="metric-value" id="m-winrate">—</div><div class="metric-label">WIN RATE</div></div>
+          <div class="metric-block"><div class="metric-value" id="m-pnl">—</div><div class="metric-label">P&L USDT</div></div>
+          <div class="metric-block"><div class="metric-value positive" id="m-best">—</div><div class="metric-label">MEJOR</div></div>
+          <div class="metric-block"><div class="metric-value negative" id="m-worst">—</div><div class="metric-label">PEOR</div></div>
+          <div class="metric-block"><div class="metric-value" id="m-timeframe">—</div><div class="metric-label">TIMEFRAME</div></div>
         </div>
       </section>
 
@@ -138,15 +94,10 @@
                   symbol: "OKX:BTCUSDT.P",
                   interval: interval,
                   timezone: "America/Argentina/Buenos_Aires",
-                  theme: "dark",
-                  style: "1",
-                  locale: "es",
+                  theme: "dark", style: "1", locale: "es",
                   toolbar_bg: "#0e1115",
-                  enable_publishing: false,
-                  hide_top_toolbar: false,
-                  save_image: false,
-                  backgroundColor: "#080a0c",
-                  gridColor: "#1e2530",
+                  enable_publishing: false, hide_top_toolbar: false, save_image: false,
+                  backgroundColor: "#080a0c", gridColor: "#1e2530",
                   studies: [
                     { id: "MASimple@tv-scripting-101!", inputs: { length: smaShort || 25 } },
                     { id: "MASimple@tv-scripting-101!", inputs: { length: smaLong  || 50 } }
@@ -168,35 +119,49 @@
           </div>
         </div>
       </section>
-
     </div>
 
-    <!-- COLUMNA DERECHA: parámetros -->
-    <section class="card card-params">
-      <div class="card-label">PARÁMETROS ACTIVOS</div>
-      <div class="params-list">
-        <div class="param-row">
-          <span class="param-key">SMA Short</span>
-          <span class="param-val" id="p-short">—</span>
+    <!-- COLUMNA DERECHA -->
+    <div class="right-col">
+
+      <section class="card card-params">
+        <div class="card-label">PARÁMETROS ACTIVOS</div>
+        <div class="params-list">
+          <div class="param-row"><span class="param-key">SMA Short</span><span class="param-val" id="p-short">—</span></div>
+          <div class="param-row"><span class="param-key">SMA Long</span><span class="param-val" id="p-long">—</span></div>
+          <div class="param-row"><span class="param-key">ADX Umbral</span><span class="param-val" id="p-adx">—</span></div>
+          <div class="param-row"><span class="param-key">ATR Mult</span><span class="param-val" id="p-atr">—</span></div>
+          <div class="param-row"><span class="param-key">Calibrado</span><span class="param-val" id="p-calib">—</span></div>
         </div>
-        <div class="param-row">
-          <span class="param-key">SMA Long</span>
-          <span class="param-val" id="p-long">—</span>
+      </section>
+
+      <section class="card card-calib">
+        <div class="card-label">ÚLTIMA CALIBRACIÓN</div>
+        <div class="calib-list">
+          <div class="calib-row"><span class="calib-key">Par ganador</span><span class="calib-val" id="c-pair">—</span></div>
+          <div class="calib-row"><span class="calib-key">Score</span><span class="calib-val" id="c-score">—</span></div>
+          <div class="calib-row"><span class="calib-key">Trades sim.</span><span class="calib-val" id="c-trades">—</span></div>
+          <div class="calib-row"><span class="calib-key">Return sim.</span><span class="calib-val" id="c-return">—</span></div>
+          <div class="calib-row"><span class="calib-key">Max DD</span><span class="calib-val negative" id="c-dd">—</span></div>
+          <div class="calib-row"><span class="calib-key">Próx. calib.</span><span class="calib-val" id="c-next">—</span></div>
         </div>
-        <div class="param-row">
-          <span class="param-key">ADX Umbral</span>
-          <span class="param-val" id="p-adx">—</span>
+      </section>
+
+      <section class="card card-signals">
+        <div class="card-label">SEÑALES HOY</div>
+        <div class="signals-grid">
+          <div class="signal-block executed">
+            <div class="signal-value" id="s-executed">—</div>
+            <div class="signal-label">EJECUTADAS</div>
+          </div>
+          <div class="signal-block blocked">
+            <div class="signal-value" id="s-blocked">—</div>
+            <div class="signal-label">BLOQUEADAS</div>
+          </div>
         </div>
-        <div class="param-row">
-          <span class="param-key">ATR Mult</span>
-          <span class="param-val" id="p-atr">—</span>
-        </div>
-        <div class="param-row">
-          <span class="param-key">Calibrado</span>
-          <span class="param-val" id="p-calib">—</span>
-        </div>
-      </div>
-    </section>
+      </section>
+
+    </div>
 
   </main>
 
