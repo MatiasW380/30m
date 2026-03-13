@@ -62,6 +62,26 @@ function renderHeader(data) {
     lastPrice = price;
   }
 
+  // RSI
+  const rsi = data?.current?.rsi;
+  const rsiEl = $("h-rsi");
+  if (rsi !== null && rsi !== undefined) {
+    rsiEl.textContent = rsi.toFixed(1);
+    rsiEl.style.color = rsi > 65 ? "var(--long)" : rsi < 35 ? "var(--short)" : "var(--text2)";
+  } else {
+    rsiEl.textContent = "—";
+  }
+
+  // ADX
+  const adx = data?.current?.adx;
+  const adxEl = $("h-adx");
+  if (adx !== null && adx !== undefined) {
+    adxEl.textContent = adx.toFixed(1);
+    adxEl.style.color = adx >= 20 ? "var(--long)" : "var(--text3)";
+  } else {
+    adxEl.textContent = "—";
+  }
+
   const pill = $("status-pill");
   const pillText = $("status-text");
   pill.className = "status-pill";
