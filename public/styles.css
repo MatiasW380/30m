@@ -30,11 +30,15 @@ body { background: var(--bg); color: var(--text); font-family: var(--font-ui); d
 .header-left { display: flex; align-items: baseline; gap: 10px; }
 .logo { font-family: var(--font-mono); font-weight: 700; font-size: 1.1rem; letter-spacing: 0.05em; color: var(--long); }
 .version { font-size: 0.75rem; color: var(--text2); letter-spacing: 0.12em; text-transform: uppercase; }
-.header-center { display: flex; flex-direction: column; align-items: center; }
+.header-center { display: flex; flex-direction: row; align-items: center; gap: 1.5rem; }
 .price-label { font-size: 0.65rem; color: var(--text3); letter-spacing: 0.15em; }
 .price-value { font-family: var(--font-mono); font-size: 1.4rem; font-weight: 700; color: var(--text); transition: color 0.3s; }
 .price-value.up   { color: var(--long); }
 .price-value.down { color: var(--short); }
+.header-indicators { display: flex; gap: 1rem; }
+.h-indicator { display: flex; flex-direction: column; align-items: center; }
+.h-ind-label { font-size: 0.6rem; color: var(--text3); letter-spacing: 0.12em; }
+.h-ind-value { font-family: var(--font-mono); font-size: 0.95rem; font-weight: 600; color: var(--text2); }
 .header-right { display: flex; flex-direction: column; align-items: flex-end; gap: 3px; }
 .status-pill { display: flex; align-items: center; gap: 6px; padding: 3px 10px; border-radius: 20px; background: var(--bg3); border: 1px solid var(--border); font-size: 0.7rem; letter-spacing: 0.1em; font-weight: 600; }
 .status-pill.online  { border-color: var(--long);  color: var(--long); }
