@@ -180,16 +180,16 @@ function renderParams(params) {
 
 // ── RENDER TRADES CORREGIDO ───────────────────────────────────────
 function renderTrades(trades) {
-  const tbody = $("trades-tbody");
+  const tbody = document.getElementById("trades-tbody");
   if (!trades || trades.length === 0) {
     tbody.innerHTML = `<tr class="empty-row"><td colspan="3">Sin operaciones</td></tr>`;
     return;
   }
-  // Mostrar max 8 trades
+  
   const recent = trades.slice(0, 8);
   tbody.innerHTML = recent.map((t) => {
     const sideCls = (t.side || "").toLowerCase();
-    const roiValue = t.roi !== undefined && t.roi !== null ? t.roi : (t.pnl_percent || 0);
+    const roiValue = t.roi !== undefined && t.roi !== null ? t.roi : 0;
     const roiFormatted = (roiValue >= 0 ? "+" : "") + roiValue.toFixed(2) + "%";
     const roiCls = roiValue >= 0 ? "roi-positive" : "roi-negative";
     const reason = t.exit_reason || t.reason || "—";
