@@ -178,25 +178,29 @@ function renderParams(params) {
   }
 }
 
+// ── RENDER TRADES CORREGIDO ───────────────────────────────────────
 function renderTrades(trades) {
   const tbody = $("trades-tbody");
   if (!trades || trades.length === 0) {
-    tbody.innerHTML = `<tr class="empty-row"><td colspan="5">Sin operaciones</td></tr>`;
+    tbody.innerHTML = `<tr class="empty-row"><td colspan="3">Sin operaciones</td></tr>`;
     return;
   }
-  // Show max 8 trades to avoid scroll
+  // Mostrar max 8 trades
   const recent = trades.slice(0, 8);
   tbody.innerHTML = recent.map((t) => {
-    const sideCls  = (t.side || "").toLowerCase();
-    const reason   = t.reason || t.exit_reason || "—";
-    const resultado = t.roi >= 0 ? "GANADA" : "PERDIDA";
-    const resCls   = t.roi >= 0 ? "roi-positive" : "roi-negative";
+    const sideCls = (t.side || "").toLowerCase();
+    const roiValue = t.roi !== undefined && t.roi !== null ? t.roi : (t.pnl_percent || 0);
+    const roiFormatted = (roiValue >= 0 ? "+" : "") + roiValue.toFixed(2) + "%";
+    const roiCls = roiValue >= 0 ? "roi-positive" : "roi-negative";
+    const reason = t.exit_reason || t.reason || "—";
+    
     return `
       <tr>
         <td><span class="side-badge ${sideCls}">${t.side || "—"}</span></td>
-        <td class="${resCls}">${resultado}</td>
+        <td class="${roiCls}">${roiFormatted}</td>
         <td><span class="reason-badge">${reason}</span></td>
-      </tr>`;
+      </tr>
+    `;
   }).join("");
 }
 
