@@ -121,7 +121,7 @@ function renderMetrics(metrics, params) {
 
   // Trades: show wins/losses as xx/yy
   const totalTrades = metrics.total_trades ?? 0;
-  const winTrades   = metrics.win_trades   ?? Math.round((metrics.win_rate || 0) / 100 * totalTrades);
+  const winTrades   = metrics.wins ?? 0;
   const lossTrades  = totalTrades - winTrades;
   const tradesEl    = $("m-trades");
   if (totalTrades > 0) {
