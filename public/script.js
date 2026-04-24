@@ -188,7 +188,6 @@ function renderTrades(trades) {
   const recent = trades.slice(0, 8);
   tbody.innerHTML = recent.map((t) => {
     const sideCls  = (t.side || "").toLowerCase();
-    const roiCls   = t.roi >= 0 ? "roi-positive" : "roi-negative";
     const reason   = t.reason || t.exit_reason || "—";
     const resultado = t.roi >= 0 ? "GANADA" : "PERDIDA";
     const resCls   = t.roi >= 0 ? "roi-positive" : "roi-negative";
@@ -196,7 +195,6 @@ function renderTrades(trades) {
       <tr>
         <td><span class="side-badge ${sideCls}">${t.side || "—"}</span></td>
         <td class="${resCls}">${resultado}</td>
-        <td class="${roiCls}">${fmtRoi(t.roi)}</td>
         <td><span class="reason-badge">${reason}</span></td>
       </tr>`;
   }).join("");
