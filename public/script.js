@@ -119,7 +119,16 @@ function renderPosition(current) {
 function renderMetrics(metrics, params) {
   if (!metrics) return;
 
-  $("m-trades").textContent = metrics.total_trades ?? "—";
+  // Trades: show wins/losses as xx/yy
+  const totalTrades = metrics.total_trades ?? 0;
+  const winTrades   = metrics.win_trades   ?? Math.round((metrics.win_rate || 0) / 100 * totalTrades);
+  const lossTrades  = totalTrades - winTrades;
+  const tradesEl    = $("m-trades");
+  if (totalTrades > 0) {
+    tradesEl.innerHTML = `<span style="color:var(--long)">${winTrades}</span><span style="color:var(--text2)">/</span><span style="color:var(--short)">${lossTrades}</span>`;
+  } else {
+    tradesEl.textContent = "—";
+  }
 
   const wr = metrics.win_rate;
   const wrEl = $("m-winrate");
@@ -175,15 +184,18 @@ function renderTrades(trades) {
     tbody.innerHTML = `<tr class="empty-row"><td colspan="5">Sin operaciones</td></tr>`;
     return;
   }
-  tbody.innerHTML = trades.map((t) => {
-    const sideCls = (t.side || "").toLowerCase();
-    const roiCls  = t.roi >= 0 ? "roi-positive" : "roi-negative";
-    const reason  = t.reason || t.exit_reason || "—";
+  // Show max 8 trades to avoid scroll
+  const recent = trades.slice(0, 8);
+  tbody.innerHTML = recent.map((t) => {
+    const sideCls  = (t.side || "").toLowerCase();
+    const roiCls   = t.roi >= 0 ? "roi-positive" : "roi-negative";
+    const reason   = t.reason || t.exit_reason || "—";
+    const resultado = t.roi >= 0 ? "GANADA" : "PERDIDA";
+    const resCls   = t.roi >= 0 ? "roi-positive" : "roi-negative";
     return `
       <tr>
         <td><span class="side-badge ${sideCls}">${t.side || "—"}</span></td>
-        <td>${fmtPrice(t.entry)}</td>
-        <td>${fmtPrice(t.exit)}</td>
+        <td class="${resCls}">${resultado}</td>
         <td class="${roiCls}">${fmtRoi(t.roi)}</td>
         <td><span class="reason-badge">${reason}</span></td>
       </tr>`;
