@@ -2,10 +2,11 @@ import { getRedis } from "../lib/redis.js";
 
 export default async function handler(req, res) {
   if (req.method !== "GET") {
-    return res.status(405).json({ status: "error", message: "Method not allowed" });
+    return res.status(405).json({ error: "Method not allowed" });
   }
 
   res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader("Cache-Control", "s-maxage=10, stale-while-revalidate=20");
 
   const redis = getRedis();
 
@@ -18,97 +19,103 @@ export default async function handler(req, res) {
     const viewerKeys = await redis.keys("snip:viewer:*");
     const activeViewers = viewerKeys ? viewerKeys.length : 0;
 
-    const [latestRaw, tradesRaw, metricsRaw, paramsRaw, notifRaw, calibRaw, signalsRaw] =
-      await Promise.all([
-        redis.get("snip:latest"),
-        redis.lrange("snip:trades", 0, 9),
-        redis.get("snip:metrics"),
-        redis.get("snip:params"),
-        redis.get("snip:notification"),
-        redis.get("snip:calib"),
-        redis.get("snip:signals"),
-      ]);
+    // Obtener todos los datos en paralelo
+    const [latestRaw, tradesRaw, metricsRaw, paramsRaw, signalsRaw] = await Promise.all([
+      redis.get("snip:latest"),
+      redis.lrange("snip:trades", 0, 9),
+      redis.get("snip:metrics"),
+      redis.get("snip:params"),
+      redis.get("snip:signals"),
+    ]);
 
-    let current = latestRaw
-      ? typeof latestRaw === "string" ? JSON.parse(latestRaw) : latestRaw
-      : null;
+    // Parsear cada dato con manejo de errores
+    let current = null;
+    try {
+      current = latestRaw ? JSON.parse(latestRaw) : null;
+    } catch (e) {
+      console.error("Error parsing latest:", e);
+    }
 
-    // CORRECCIÓN: Convertir entry_time a timestamp numérico si es string
-    if (current && current.entry_time && typeof current.entry_time === "string") {
-      const parsed = new Date(current.entry_time);
-      if (!isNaN(parsed.getTime())) {
-        current.entry_time = parsed.getTime();
-      } else {
-        current.entry_time = null;
+    let metrics = null;
+    try {
+      metrics = metricsRaw ? JSON.parse(metricsRaw) : null;
+    } catch (e) {
+      console.error("Error parsing metrics:", e);
+    }
+
+    let params = null;
+    try {
+      params = paramsRaw ? JSON.parse(paramsRaw) : null;
+    } catch (e) {
+      console.error("Error parsing params:", e);
+    }
+
+    let signals = null;
+    try {
+      signals = signalsRaw ? JSON.parse(signalsRaw) : null;
+    } catch (e) {
+      console.error("Error parsing signals:", e);
+    }
+
+    // Procesar trades
+    const recent_trades = [];
+    if (tradesRaw && tradesRaw.length > 0) {
+      for (const t of tradesRaw) {
+        try {
+          const trade = typeof t === "string" ? JSON.parse(t) : t;
+          if (trade.ts) {
+            const d = new Date(trade.ts);
+            trade.time = d.toLocaleTimeString("es-AR", {
+              hour: "2-digit",
+              minute: "2-digit",
+              timeZone: "America/Argentina/Buenos_Aires",
+            });
+          }
+          recent_trades.push(trade);
+        } catch (e) {
+          console.error("Error parsing trade:", e);
+        }
       }
     }
 
-    const metrics = metricsRaw
-      ? typeof metricsRaw === "string" ? JSON.parse(metricsRaw) : metricsRaw
-      : null;
-
-    const params = paramsRaw
-      ? typeof paramsRaw === "string" ? JSON.parse(paramsRaw) : paramsRaw
-      : null;
-
-    const notification = notifRaw
-      ? typeof notifRaw === "string" ? JSON.parse(notifRaw) : notifRaw
-      : null;
-
-    const calib = calibRaw
-      ? typeof calibRaw === "string" ? JSON.parse(calibRaw) : calibRaw
-      : null;
-
-    const signals = signalsRaw
-      ? typeof signalsRaw === "string" ? JSON.parse(signalsRaw) : signalsRaw
-      : null;
-
-    const recent_trades = (tradesRaw || []).map((t) => {
-      const trade = typeof t === "string" ? JSON.parse(t) : t;
-      if (trade.ts) {
-        const d = new Date(trade.ts);
-        trade.time = d.toLocaleTimeString("es-AR", {
-          hour: "2-digit",
-          minute: "2-digit",
-          timeZone: "America/Argentina/Buenos_Aires",
-        });
-      }
-      return trade;
-    });
-
+    // Calcular duración si hay posición
     let duration = null;
-    if (current && current.entry_time && typeof current.entry_time === "number") {
-      const mins = Math.floor((Date.now() - current.entry_time) / 60000);
-      if (mins < 60) duration = `${mins}m`;
-      else duration = `${Math.floor(mins / 60)}h ${mins % 60}m`;
+    if (current && current.entry_time) {
+      let entryTime = current.entry_time;
+      if (typeof entryTime === "string") {
+        entryTime = new Date(entryTime).getTime();
+      }
+      if (typeof entryTime === "number" && !isNaN(entryTime)) {
+        const mins = Math.floor((Date.now() - entryTime) / 60000);
+        if (mins < 60) duration = `${mins}m`;
+        else duration = `${Math.floor(mins / 60)}h ${mins % 60}m`;
+      }
     }
 
+    // Respuesta final
     const response = {
       generated_at: Date.now(),
       active_viewers: activeViewers,
-      warning: activeViewers >= 3 ? `⚠️ ${activeViewers} viewers activos — consumo alto` : null,
-      current: current
-        ? { ...current, duration }
-        : { price: null, position: null, status: "OFFLINE" },
-      metrics: metrics || {
-        total_trades: 0,
-        win_rate: 0,
-        total_pnl: 0,
-        best_trade: null,
-        worst_trade: null,
-        wins: 0,
-      },
+      warning: activeViewers >= 3 ? `⚠️ ${activeViewers} viewers activos` : null,
+      current: current || { price: null, position: null, status: "OFFLINE", updated_at: null },
+      metrics: metrics || { total_trades: 0, win_rate: 0, total_pnl: 0, best_trade: null, worst_trade: null, wins: 0 },
       recent_trades,
       params: params || null,
-      notification,
-      calib: calib || null,
       signals: signals || null,
     };
 
-    res.setHeader("Cache-Control", "s-maxage=10, stale-while-revalidate=20");
+    // Añadir duración si existe
+    if (duration && response.current) {
+      response.current.duration = duration;
+    }
+
     return res.status(200).json(response);
   } catch (err) {
     console.error("Data error:", err);
-    return res.status(500).json({ status: "error", message: err.message });
+    return res.status(500).json({ 
+      status: "error", 
+      message: err.message,
+      stack: process.env.NODE_ENV === "development" ? err.stack : undefined
+    });
   }
 }
