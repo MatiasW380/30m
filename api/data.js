@@ -18,7 +18,6 @@ export default async function handler(req, res) {
     const viewerKeys = await redis.keys("snip:viewer:*");
     const activeViewers = viewerKeys ? viewerKeys.length : 0;
 
-    // Leer datos en paralelo — agregamos calib y signals
     const [latestRaw, tradesRaw, metricsRaw, paramsRaw, notifRaw, calibRaw, signalsRaw] =
       await Promise.all([
         redis.get("snip:latest"),
@@ -30,9 +29,19 @@ export default async function handler(req, res) {
         redis.get("snip:signals"),
       ]);
 
-    const current = latestRaw
+    let current = latestRaw
       ? typeof latestRaw === "string" ? JSON.parse(latestRaw) : latestRaw
       : null;
+
+    // CORRECCIÓN: Convertir entry_time a timestamp numérico si es string
+    if (current && current.entry_time && typeof current.entry_time === "string") {
+      const parsed = new Date(current.entry_time);
+      if (!isNaN(parsed.getTime())) {
+        current.entry_time = parsed.getTime();
+      } else {
+        current.entry_time = null;
+      }
+    }
 
     const metrics = metricsRaw
       ? typeof metricsRaw === "string" ? JSON.parse(metricsRaw) : metricsRaw
@@ -68,8 +77,8 @@ export default async function handler(req, res) {
     });
 
     let duration = null;
-    if (current && current.entry_time) {
-      const mins = Math.floor((Date.now() - new Date(current.entry_time).getTime()) / 60000);
+    if (current && current.entry_time && typeof current.entry_time === "number") {
+      const mins = Math.floor((Date.now() - current.entry_time) / 60000);
       if (mins < 60) duration = `${mins}m`;
       else duration = `${Math.floor(mins / 60)}h ${mins % 60}m`;
     }
