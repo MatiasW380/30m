@@ -90,8 +90,12 @@
     <div class="card" style="margin-top:10px;">
       <div class="card-label">ÚLTIMAS OPERACIONES</div>
       <table>
-        <thead><tr><th>LADO</th><th>RESULTADO</th><th>MOTIVO</th></tr></thead>
-        <tbody id="trades-tbody"><tr><td colspan="3">Cargando...</td></tr></tbody>
+        <thead>
+          <tr><th>LADO</th><th>RESULTADO</th><th>MOTIVO</th></tr>
+        </thead>
+        <tbody id="trades-tbody">
+          <tr><td colspan="3">Cargando...</td></tr>
+        </tbody>
       </table>
     </div>
   </div>
@@ -201,6 +205,8 @@
             <td>${t.reason || '—'}</td>
           </tr>`;
         }).join('');
+      } else {
+        document.getElementById('trades-tbody').innerHTML = '<tr><td colspan="3">Sin operaciones</td></tr>';
       }
     } catch(e) {
       console.error(e);
